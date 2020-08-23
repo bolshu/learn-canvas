@@ -1,0 +1,1 @@
+console.log('AWESOME FRONTEND APP TEMPLATE');
