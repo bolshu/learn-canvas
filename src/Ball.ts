@@ -16,7 +16,7 @@ export default class Ball {
   private static MIN_R: number;
 
   constructor(context: CanvasRenderingContext2D) {
-    Ball.MIN_R = Ball.getRadius();
+    Ball.MIN_R = 10;
 
     this.r = Ball.MIN_R;
     this.x = this.getStartCoordinates().x;
@@ -27,7 +27,7 @@ export default class Ball {
     this.ctx = context;
   }
 
-  public update(mouseX: number, mouseY: number): void {
+  public update(mouseX?: number, mouseY?: number): void {
     this.updateRadius(mouseX, mouseY);
 
     if (this.isReachedTheLimit(this.x, window.innerWidth)) {
@@ -44,12 +44,14 @@ export default class Ball {
     this.draw();
   }
 
-  private updateRadius(mouseX: number, mouseY: number): void {
+  private updateRadius(mouseX?: number, mouseY?: number): void {
     const BALL_AREA = 50;
-    const MAX_R = 100;
+    const MAX_R = 200;
 
     if (
-      mouseX - this.x < BALL_AREA
+      mouseX
+      && mouseY
+      && mouseX - this.x < BALL_AREA
       && mouseX - this.x > -BALL_AREA
       && mouseY - this.y < BALL_AREA
       && mouseY - this.y > -BALL_AREA
@@ -69,13 +71,9 @@ export default class Ball {
   }
 
   private static getRandomHexColor(): string {
-    const palette = ['#E71D36', '#2EC4B6', '#EFFFE9', '#011627'];
+    const palette = ['#2d4059', '#ea5455', '#decdc3', '#e5e5e5'];
 
     return palette[Math.floor(Math.random() * palette.length)];
-  }
-
-  private static getRadius(): number {
-    return Math.random() * 30 + 2;
   }
 
   private static getDynamic(): number {

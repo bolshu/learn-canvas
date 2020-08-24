@@ -9,17 +9,14 @@ export default class BallsCanvas {
 
   private balls: Ball[];
 
-  private mouseX: number | null;
+  private mouseX?: number;
 
-  private mouseY: number | null;
+  private mouseY?: number;
 
   constructor() {
     this.canvas = new Canvas();
     this.ctx = this.canvas.getCtx();
     this.balls = [];
-
-    this.mouseX = null;
-    this.mouseY = null;
 
     this.addBalls();
     this.addMouseListener();
@@ -46,12 +43,12 @@ export default class BallsCanvas {
     this.canvas.clear();
 
     this.balls.forEach((it) => {
-      it.update(this.mouseX as number, this.mouseY as number);
+      it.update(this.mouseX, this.mouseY);
     });
   }
 
   private addBalls() {
-    const NUMBER_OF_BALLS = 200;
+    const NUMBER_OF_BALLS = 500;
 
     for (let i = 0; i < NUMBER_OF_BALLS; i += 1) {
       this.balls.push(new Ball(this.ctx));
