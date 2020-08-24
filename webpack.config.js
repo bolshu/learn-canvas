@@ -5,7 +5,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const DIST_PATH = path.resolve(__dirname, 'dist');
 
 const HTML_TEMPLATE = {
-  title: 'Frontend app template', // change me
+  title: 'Canvas',
 };
 
 module.exports = {
