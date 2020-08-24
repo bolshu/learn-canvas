@@ -3,108 +3,104 @@ import Canvas from './canvas';
 const canvas = new Canvas();
 const { ctx } = canvas;
 
-function getId(): number {
-  return new Date().getTime() * (Math.random() / 2);
-}
+class Ball {
+  private ctx: CanvasRenderingContext2D;
 
-function getRandomHexColor(): string {
-  return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
-}
+  private r: number;
 
-function getRandomRadius(): number {
-  return Math.random() * 50;
-}
+  private x: number;
 
-function getRandomDynamic(): number {
-  const rand = 2 - 0.5 + Math.random() * (6 - 2 + 1);
-  const multiply = Math.random() > 0.5;
+  private y: number;
 
-  return Math.round(rand) * (multiply ? -1 : 1);
-}
+  private dx: number;
 
-function isReachedTheLimits(position: number, radius: number, limit: number): boolean {
-  return (position + radius > limit) || (position - radius < 0);
-}
+  private dy: number;
 
-function getStartCoordinates(): { x: number; y: number } {
-  return {
-    x: window.innerWidth / 2,
-    y: window.innerHeight / 2,
-  };
-}
+  private color: string;
 
-type Circle = {
-  id: number;
-  r: number;
-  x: number;
-  y: number;
-  dx: number;
-  dy: number;
-  color: string;
-};
-
-let circles: Circle[] = [{
-  id: getId(),
-  r: getRandomRadius(),
-  x: getStartCoordinates().x,
-  y: getStartCoordinates().y,
-  dx: 2,
-  dy: 2,
-  color: getRandomHexColor(),
-}];
-
-function render(circle: Circle): void {
-  const {
-    x,
-    y,
-    r,
-    color,
-  } = circle;
-
-  ctx.fillStyle = color;
-  ctx.beginPath();
-  ctx.arc(x, y, r, 0, Math.PI * 2, false);
-  ctx.fill();
-}
-
-function move(circle: Circle): void {
-  const {
-    id,
-    x,
-    dx,
-    y,
-    dy,
-    r,
-  } = circle;
-
-  let result = { ...circle };
-
-  if (isReachedTheLimits(x, r, window.innerWidth)) {
-    result = {
-      ...result,
-      dx: -dx,
-      color: getRandomHexColor(),
-    };
+  constructor(context: CanvasRenderingContext2D) {
+    this.r = Ball.getRandomRadius();
+    this.x = this.getStartCoordinates().x;
+    this.y = this.getStartCoordinates().y;
+    this.dx = Ball.getRandomDynamic();
+    this.dy = Ball.getRandomDynamic();
+    this.color = Ball.getRandomHexColor();
+    this.ctx = context;
   }
 
-  if (isReachedTheLimits(y, r, window.innerHeight)) {
-    result = {
-      ...result,
-      dy: -dy,
-      color: getRandomHexColor(),
-    };
+  public update(): void {
+    if (this.isReachedTheLimits(this.x, window.innerWidth)) {
+      this.dx = -this.dx;
+      this.color = Ball.getRandomHexColor();
+    }
+
+    if (this.isReachedTheLimits(this.y, window.innerHeight)) {
+      this.dy = -this.dy;
+      this.color = Ball.getRandomHexColor();
+    }
+
+    this.x += this.dx;
+    this.y += this.dy;
+
+    this.draw();
   }
 
-  result = {
-    ...result,
-    x: x + result.dx,
-    y: y + result.dy,
-  };
+  private draw(): void {
+    this.ctx.fillStyle = this.color;
+    this.ctx.beginPath();
+    this.ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2, false);
+    this.ctx.fill();
+  }
 
-  circles = circles.map((it) => (
-    it.id === id ? result : it
-  ));
+  private static getRandomHexColor(): string {
+    return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+  }
+
+  private static getRandomRadius(): number {
+    return Math.random() * 50;
+  }
+
+  private static getRandomDynamic(): number {
+    const min = 1;
+    const max = 2;
+    const rand = min - 0.5 + Math.random() * (max - min + 1);
+    const multiply = Math.random() > 0.5;
+
+    return Math.round(rand) * (multiply ? -1 : 1);
+  }
+
+  private getStartCoordinates(): { x: number; y: number } {
+    const { innerHeight, innerWidth } = window;
+
+    const startX = Math.random() * innerWidth;
+    const x = this.getValidPoint(startX, innerWidth);
+
+    const startY = Math.random() * innerHeight;
+    const y = this.getValidPoint(startY, innerHeight);
+
+    return { x, y };
+  }
+
+  private getValidPoint(startPoint: number, limit: number): number {
+    let point: number;
+
+    if (startPoint < this.r) {
+      point = this.r;
+    } else if (startPoint > limit - this.r) {
+      point = limit - this.r;
+    } else {
+      point = startPoint;
+    }
+
+    return point;
+  }
+
+  private isReachedTheLimits(position: number, limit: number): boolean {
+    return (position + this.r > limit) || (position - this.r < 0);
+  }
 }
+
+const circles = [new Ball(ctx)];
 
 function animate(): void {
   window.requestAnimationFrame(animate);
@@ -112,8 +108,7 @@ function animate(): void {
   canvas.clear();
 
   circles.forEach((it) => {
-    render(it);
-    move(it);
+    it.update();
   });
 }
 
@@ -122,19 +117,9 @@ animate();
 let count = 0;
 
 window.setInterval(() => {
-  if (count < 1000) {
+  if (count < 500) {
     count += 1;
 
-    const dynamic = getRandomDynamic();
-
-    circles.push({
-      id: getId(),
-      r: getRandomRadius(),
-      x: getStartCoordinates().x,
-      y: getStartCoordinates().y,
-      dx: dynamic,
-      dy: dynamic,
-      color: getRandomHexColor(),
-    });
+    circles.push(new Ball(ctx));
   }
-}, 50);
+}, 100);
