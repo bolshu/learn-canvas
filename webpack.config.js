@@ -6,11 +6,12 @@ const DIST_PATH = path.resolve(__dirname, 'dist');
 
 const HTML_TEMPLATE = {
   title: 'Canvas',
+  template: './src/index.html',
 };
 
 module.exports = {
   entry: {
-    index: ['./src/index.ts', './src/index.css'],
+    index: ['./src/scripts/index.ts', './src/index.css'],
   },
   output: {
     filename: '[name].js',

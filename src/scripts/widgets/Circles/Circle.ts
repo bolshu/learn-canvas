@@ -1,5 +1,11 @@
-export default class Ball {
-  private ctx: CanvasRenderingContext2D;
+type TContext = CanvasRenderingContext2D;
+
+export default class Circle {
+  private ctx: TContext;
+
+  private rMin: number;
+
+  private rMax: number;
 
   private r: number;
 
@@ -13,18 +19,19 @@ export default class Ball {
 
   private color: string;
 
-  private static MIN_R: number;
+  private circleArea: number;
 
-  constructor(context: CanvasRenderingContext2D) {
-    Ball.MIN_R = 10;
-
-    this.r = Ball.MIN_R;
+  constructor(context: TContext) {
+    this.ctx = context;
+    this.rMin = 10;
+    this.rMax = 200;
+    this.r = this.rMin;
     this.x = this.getStartCoordinates().x;
     this.y = this.getStartCoordinates().y;
-    this.dx = Ball.getDynamic();
-    this.dy = Ball.getDynamic();
-    this.color = Ball.getRandomHexColor();
-    this.ctx = context;
+    this.dx = Circle.getDynamic();
+    this.dy = Circle.getDynamic();
+    this.color = Circle.getRandomHexColor();
+    this.circleArea = 50;
   }
 
   public update(mouseX?: number, mouseY?: number): void {
@@ -45,20 +52,17 @@ export default class Ball {
   }
 
   private updateRadius(mouseX?: number, mouseY?: number): void {
-    const BALL_AREA = 50;
-    const MAX_R = 200;
-
     if (
       mouseX
       && mouseY
-      && mouseX - this.x < BALL_AREA
-      && mouseX - this.x > -BALL_AREA
-      && mouseY - this.y < BALL_AREA
-      && mouseY - this.y > -BALL_AREA
-      && this.r < MAX_R
+      && mouseX - this.x < this.circleArea
+      && mouseX - this.x > -this.circleArea
+      && mouseY - this.y < this.circleArea
+      && mouseY - this.y > -this.circleArea
+      && this.r < this.rMax
     ) {
       this.r += 1;
-    } else if (this.r > Ball.MIN_R) {
+    } else if (this.r > this.rMin) {
       this.r -= 1;
     }
   }
@@ -89,15 +93,15 @@ export default class Ball {
     const { innerHeight, innerWidth } = window;
 
     const startX = Math.random() * innerWidth;
-    const x = this.getStartValidPoint(startX, innerWidth);
+    const x = this.getValidStartPoint(startX, innerWidth);
 
     const startY = Math.random() * innerHeight;
-    const y = this.getStartValidPoint(startY, innerHeight);
+    const y = this.getValidStartPoint(startY, innerHeight);
 
     return { x, y };
   }
 
-  private getStartValidPoint(startPoint: number, limit: number): number {
+  private getValidStartPoint(startPoint: number, limit: number): number {
     let point: number;
 
     if (startPoint < this.r) {

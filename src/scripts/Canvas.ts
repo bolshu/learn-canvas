@@ -5,8 +5,10 @@ export default class Canvas {
 
   private canvas: HTMLCanvasElement;
 
+  private static instance: Canvas;
+
   constructor() {
-    Canvas.createCanvas();
+    Canvas.create();
 
     this.canvas = <HTMLCanvasElement>document.querySelector('#canvas')!;
     this.ctx = this.canvas.getContext('2d')!;
@@ -14,7 +16,15 @@ export default class Canvas {
     this.addResizeListener();
   }
 
-  private static createCanvas(): void {
+  public static getInstance(): Canvas {
+    if (!Canvas.instance) {
+      Canvas.instance = new Canvas();
+    }
+
+    return Canvas.instance;
+  }
+
+  private static create(): void {
     const element = document.createElement('canvas')!;
 
     element.setAttribute('id', 'canvas');
