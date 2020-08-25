@@ -58,10 +58,7 @@ export default class Navigation implements INavigation {
     nav.addEventListener('click', (e: MouseEvent) => {
       const target = <HTMLElement>e.target;
 
-      if (
-        target.tagName !== 'LI'
-        || target.classList.contains(Navigation.activeClassName)
-      ) return;
+      if (target.tagName !== 'LI') return;
 
       const { id } = target;
 

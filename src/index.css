@@ -14,7 +14,7 @@ body {
   font-size: 20px;
   line-height: 1;
 
-  color: navy;
+  color: black;
   background-color: white;
 }
 
@@ -24,7 +24,7 @@ nav {
   right: 0;
   left: 0;
 
-  background-color: rgba(255, 255, 255, .7);
+  background-color: cornsilk;
 
   opacity: 0;
 
@@ -47,7 +47,7 @@ ul {
 
 li {
   padding: 0 10px;
-
+  
   cursor: pointer;
 }
 
@@ -56,9 +56,8 @@ li:hover {
 }
 
 li.active {
+  color: gray;
   cursor: default;
-}
 
-li.active:hover {
-  color: navy;
+  pointer-events: none;
 }

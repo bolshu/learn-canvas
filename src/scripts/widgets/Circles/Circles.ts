@@ -10,45 +10,50 @@ export default class Circles implements IWidget {
 
   private circles: Circle[];
 
-  private circlesCount: number;
+  private mouseHandlerCb: (e: MouseEvent) => void;
+
+  private animationId?: number;
 
   private mouseX?: number;
 
   private mouseY?: number;
 
-  private animationId?: number;
+  private static readonly circlesCount = 500;
 
   constructor() {
     this.canvas = Canvas.getInstance();
     this.ctx = this.canvas.getCtx();
     this.circles = [];
-    this.circlesCount = 500;
 
-    this.update = this.update.bind(this);
-
-    this.addCircles();
-    this.addMouseListener();
-  }
-
-  public start(): void {
-    this.update();
-  }
-
-  public stop(): void {
-    window.cancelAnimationFrame(this.animationId!);
-  }
-
-  private addMouseListener(): void {
-    const cb = throttle((e: MouseEvent) => {
+    this.updateCircles = this.updateCircles.bind(this);
+    this.mouseHandlerCb = throttle((e: MouseEvent) => {
       this.mouseX = e.x;
       this.mouseY = e.y;
     }, 50);
 
-    this.canvas.getCanvas().addEventListener('mousemove', cb);
+    this.addCircles();
   }
 
-  private update(): void {
-    this.animationId = window.requestAnimationFrame(this.update);
+  public start(): void {
+    this.addMouseListener();
+    this.updateCircles();
+  }
+
+  public stop(): void {
+    this.removeMouseListener();
+    window.cancelAnimationFrame(this.animationId!);
+  }
+
+  private addMouseListener(): void {
+    this.canvas.getCanvas().addEventListener('mousemove', this.mouseHandlerCb);
+  }
+
+  private removeMouseListener(): void {
+    this.canvas.getCanvas().removeEventListener('mousemove', this.mouseHandlerCb);
+  }
+
+  private updateCircles(): void {
+    this.animationId = window.requestAnimationFrame(this.updateCircles);
 
     this.canvas.clear();
 
@@ -58,7 +63,7 @@ export default class Circles implements IWidget {
   }
 
   private addCircles() {
-    for (let i = 0; i < this.circlesCount; i += 1) {
+    for (let i = 0; i < Circles.circlesCount; i += 1) {
       this.circles.push(new Circle(this.ctx));
     }
   }
