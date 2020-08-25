@@ -1,36 +1,31 @@
 import { IWidget } from '../interfaces';
+import { TCoordinate } from './types';
 import Canvas from '../../Canvas';
 import Circle from './Circle';
 import throttle from '../../throttle';
 
 export default class Circles implements IWidget {
-  private canvas: Canvas;
-
-  private ctx: CanvasRenderingContext2D;
-
   private circles: Circle[];
-
-  private mouseHandlerCb: (e: MouseEvent) => void;
 
   private animationId?: number;
 
-  private mouseX?: number;
+  private mouseX?: TCoordinate;
 
-  private mouseY?: number;
+  private mouseY?: TCoordinate;
 
   private static readonly circlesCount = 500;
 
+  private static readonly clearMouseCoordinatesTimeout = 3000;
+
   constructor() {
-    this.canvas = Canvas.getInstance();
-    this.ctx = this.canvas.getCtx();
     this.circles = [];
 
     this.updateCircles = this.updateCircles.bind(this);
-    this.mouseHandlerCb = throttle((e: MouseEvent) => {
-      this.mouseX = e.x;
-      this.mouseY = e.y;
-    }, 50);
-
+    this.resetMouseCoordinates = throttle(
+      this.resetMouseCoordinates.bind(this),
+      Circles.clearMouseCoordinatesTimeout,
+    );
+    this.mouseHandlerCb = throttle(this.mouseHandlerCb.bind(this), 50);
     this.addCircles();
   }
 
@@ -44,18 +39,34 @@ export default class Circles implements IWidget {
     window.cancelAnimationFrame(this.animationId!);
   }
 
+  private mouseHandlerCb(e: MouseEvent) {
+    this.mouseX = e.x;
+    this.mouseY = e.y;
+
+    this.resetMouseCoordinates();
+  }
+
+  private resetMouseCoordinates(): void {
+    const timer = window.setTimeout(() => {
+      this.mouseX = undefined;
+      this.mouseY = undefined;
+
+      window.clearTimeout(timer);
+    }, Circles.clearMouseCoordinatesTimeout);
+  }
+
   private addMouseListener(): void {
-    this.canvas.getCanvas().addEventListener('mousemove', this.mouseHandlerCb);
+    Canvas.getInstance().getCanvas().addEventListener('mousemove', this.mouseHandlerCb);
   }
 
   private removeMouseListener(): void {
-    this.canvas.getCanvas().removeEventListener('mousemove', this.mouseHandlerCb);
+    Canvas.getInstance().getCanvas().removeEventListener('mousemove', this.mouseHandlerCb);
   }
 
   private updateCircles(): void {
     this.animationId = window.requestAnimationFrame(this.updateCircles);
 
-    this.canvas.clear();
+    Canvas.getInstance().clear();
 
     this.circles.forEach((it) => {
       it.update(this.mouseX, this.mouseY);
@@ -64,7 +75,7 @@ export default class Circles implements IWidget {
 
   private addCircles() {
     for (let i = 0; i < Circles.circlesCount; i += 1) {
-      this.circles.push(new Circle(this.ctx));
+      this.circles.push(new Circle(Canvas.getInstance().context));
     }
   }
 }

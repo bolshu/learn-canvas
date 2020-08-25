@@ -1,47 +1,53 @@
+import { TCoordinate } from './types';
+
 type TContext = CanvasRenderingContext2D;
+
+type TDynamic = number;
+
+type TRadius = number;
+
+type TColor = string;
 
 export default class Circle {
   private ctx: TContext;
 
-  private rMin: number;
+  private x: TCoordinate;
 
-  private rMax: number;
+  private y: TCoordinate;
 
-  private r: number;
+  private dx: TDynamic;
 
-  private x: number;
+  private dy: TDynamic;
 
-  private y: number;
+  private r: TRadius;
 
-  private dx: number;
+  private readonly color = Circle.getColor();
 
-  private dy: number;
+  private static readonly area = 100;
 
-  private color: string;
+  private static readonly rMin = 20;
 
-  private circleArea: number;
+  private static readonly rMax = 100;
+
+  private static readonly rIncrease = 1;
 
   constructor(context: TContext) {
     this.ctx = context;
-    this.rMin = 10;
-    this.rMax = 200;
-    this.r = this.rMin;
     this.x = this.getStartCoordinates().x;
     this.y = this.getStartCoordinates().y;
     this.dx = Circle.getDynamic();
     this.dy = Circle.getDynamic();
-    this.color = Circle.getRandomHexColor();
-    this.circleArea = 50;
+    this.r = Circle.rMin;
   }
 
-  public update(mouseX?: number, mouseY?: number): void {
+  public update(mouseX?: TCoordinate, mouseY?: TCoordinate): void {
     this.updateRadius(mouseX, mouseY);
 
-    if (this.isReachedTheLimit(this.x, window.innerWidth)) {
+    if (this.isOutOfArea(this.x, this.ctx.canvas.width)) {
       this.dx = -this.dx;
     }
 
-    if (this.isReachedTheLimit(this.y, window.innerHeight)) {
+    if (this.isOutOfArea(this.y, this.ctx.canvas.height)) {
       this.dy = -this.dy;
     }
 
@@ -51,63 +57,69 @@ export default class Circle {
     this.draw();
   }
 
-  private updateRadius(mouseX?: number, mouseY?: number): void {
+  private updateRadius(mouseX?: TCoordinate, mouseY?: TCoordinate): void {
     if (
       mouseX
       && mouseY
-      && mouseX - this.x < this.circleArea
-      && mouseX - this.x > -this.circleArea
-      && mouseY - this.y < this.circleArea
-      && mouseY - this.y > -this.circleArea
-      && this.r < this.rMax
+      && mouseX - this.x < Circle.area
+      && mouseX - this.x > -Circle.area
+      && mouseY - this.y < Circle.area
+      && mouseY - this.y > -Circle.area
+      && this.r < Circle.rMax
     ) {
-      this.r += 1;
-    } else if (this.r > this.rMin) {
-      this.r -= 1;
+      this.r += Circle.rIncrease;
+    } else if (this.r > Circle.rMin) {
+      this.r -= Circle.rIncrease;
     }
   }
 
   private draw(): void {
+    const ANGLE = {
+      START: 0,
+      END: Math.PI * 2,
+    };
+
     this.ctx.fillStyle = this.color;
     this.ctx.beginPath();
-    this.ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2, false);
+    this.ctx.arc(this.x, this.y, this.r, ANGLE.START, ANGLE.END, false);
     this.ctx.fill();
   }
 
-  private static getRandomHexColor(): string {
+  private static getColor(): TColor {
     const palette = ['#2d4059', '#ea5455', '#decdc3', '#e5e5e5'];
 
     return palette[Math.floor(Math.random() * palette.length)];
   }
 
-  private static getDynamic(): number {
-    const min = 0.5;
-    const max = 3;
-    const rand = min - 0.5 + Math.random() * (max - min + 1);
-    const multiply = Math.random() > 0.5 ? -1 : 1;
+  private static getDynamic(): TDynamic {
+    const MIN = 0.5;
+    const MAX = 3;
+    const MULTIPLIER = Math.random() > 0.5 ? -1 : 1;
+    const rand = Math.random() * (MAX - MIN);
 
-    return Math.round(rand) * multiply;
+    return Math.round(rand) * MULTIPLIER;
   }
 
-  private getStartCoordinates(): { x: number; y: number } {
-    const { innerHeight, innerWidth } = window;
+  private getStartCoordinates(): { x: TCoordinate; y: TCoordinate } {
+    const { canvas } = this.ctx;
+    const { width, height } = canvas;
 
-    const startX = Math.random() * innerWidth;
-    const x = this.getValidStartPoint(startX, innerWidth);
+    const startX = Math.random() * width;
+    const x = Circle.getValidStartPoint(startX, width);
 
-    const startY = Math.random() * innerHeight;
-    const y = this.getValidStartPoint(startY, innerHeight);
+    const startY = Math.random() * height;
+    const y = Circle.getValidStartPoint(startY, height);
 
     return { x, y };
   }
 
-  private getValidStartPoint(startPoint: number, limit: number): number {
-    let point: number;
+  private static getValidStartPoint(startPoint: TCoordinate, limit: TCoordinate): TCoordinate {
+    let point: TCoordinate;
 
-    if (startPoint < this.r) {
-      point = this.r;
-    } else if (startPoint > limit - this.r) {
-      point = limit - this.r;
+    if (startPoint < Circle.rMin) {
+      point = Circle.rMin;
+    } else if (startPoint > limit - Circle.rMin) {
+      point = limit - Circle.rMin;
     } else {
       point = startPoint;
     }
@@ -115,7 +127,7 @@ export default class Circle {
     return point;
   }
 
-  private isReachedTheLimit(position: number, limit: number): boolean {
+  private isOutOfArea(position: TCoordinate, limit: TCoordinate): boolean {
     return (position + this.r > limit) || (position - this.r < 0);
   }
 }

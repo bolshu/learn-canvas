@@ -1,16 +1,18 @@
-// import throttle from './throttle';
+type TContext = CanvasRenderingContext2D;
+
+type TCanvas = HTMLCanvasElement;
 
 export default class Canvas {
-  private ctx: CanvasRenderingContext2D;
+  private ctx: TContext;
 
-  private canvas: HTMLCanvasElement;
+  private canvas: TCanvas;
 
   private static instance: Canvas;
 
   constructor() {
     Canvas.create();
 
-    this.canvas = <HTMLCanvasElement>document.querySelector('#canvas')!;
+    this.canvas = <TCanvas>document.querySelector('#canvas')!;
     this.ctx = this.canvas.getContext('2d')!;
 
     this.addResizeListener();
@@ -26,30 +28,34 @@ export default class Canvas {
 
   private static create(): void {
     const element = document.createElement('canvas')!;
+    const { innerWidth, innerHeight } = window;
 
     element.setAttribute('id', 'canvas');
-    element.setAttribute('width', window.innerWidth.toString());
-    element.setAttribute('height', window.innerHeight.toString());
+    element.setAttribute('width', innerWidth.toString());
+    element.setAttribute('height', innerHeight.toString());
 
     document.body.appendChild(element);
   }
 
   public clear() {
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    const { width, height } = this.canvas;
+    this.ctx.clearRect(0, 0, width, height);
   }
 
   public getCanvas() {
     return this.canvas;
   }
 
-  public getCtx() {
-    return this.ctx;
-  }
-
   private addResizeListener(): void {
     window.addEventListener('resize', () => {
-      this.canvas.width = window.innerWidth;
-      this.canvas.height = window.innerHeight;
+      const { innerWidth, innerHeight } = window;
+
+      this.canvas.width = innerWidth;
+      this.canvas.height = innerHeight;
     });
+  }
+
+  get context(): TContext {
+    return this.ctx;
   }
 }
