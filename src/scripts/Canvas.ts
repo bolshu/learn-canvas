@@ -36,7 +36,7 @@ export default class Canvas implements ICanvas {
     const { innerWidth, innerHeight } = window;
 
     element.setAttribute('id', 'canvas');
-    element.setAttribute('width', (innerWidth - 200).toString());
+    element.setAttribute('width', innerWidth.toString());
     element.setAttribute('height', innerHeight.toString());
 
     document.body.appendChild(element);
