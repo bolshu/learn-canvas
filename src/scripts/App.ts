@@ -5,8 +5,12 @@ import { IWidget } from './widgets/interfaces';
 // widgets
 import Circles from './widgets/Circles/Circles';
 
-export default class App {
-  private widgets: { [ket: string]: IWidget };
+interface IApp {
+  run(): void;
+}
+
+export default class App implements IApp {
+  private widgets: Record<string, IWidget>;
 
   private navigation: Navigation;
 
@@ -14,6 +18,9 @@ export default class App {
     this.widgets = {
       circles: new Circles(),
       circles1: new Circles(),
+      circles2: new Circles(),
+      circles3: new Circles(),
+      circles4: new Circles(),
     };
 
     this.navigationHandler = this.navigationHandler.bind(this);

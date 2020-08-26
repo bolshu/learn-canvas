@@ -2,7 +2,12 @@ type TContext = CanvasRenderingContext2D;
 
 type TCanvas = HTMLCanvasElement;
 
-export default class Canvas {
+interface ICanvas {
+  getCanvas(): TCanvas;
+  clear(): void;
+}
+
+export default class Canvas implements ICanvas {
   private ctx: TContext;
 
   private canvas: TCanvas;
@@ -31,7 +36,7 @@ export default class Canvas {
     const { innerWidth, innerHeight } = window;
 
     element.setAttribute('id', 'canvas');
-    element.setAttribute('width', innerWidth.toString());
+    element.setAttribute('width', (innerWidth - 200).toString());
     element.setAttribute('height', innerHeight.toString());
 
     document.body.appendChild(element);

@@ -27,8 +27,17 @@ export default class Navigation implements INavigation {
   }
 
   public init(): void {
-    if (this.widgets.length < 2) return;
+    if (this.widgets.length === 1) return;
 
+    this.render();
+    this.addClickListener();
+
+    this.widgetList = document.querySelectorAll('li');
+
+    this.addWidgetActiveClass(this.currentWidget);
+  }
+
+  private render(): void {
     const nav = document.createElement('nav');
     const ul = document.createElement('ul');
 
@@ -39,17 +48,10 @@ export default class Navigation implements INavigation {
       li.innerText = it;
       li.setAttribute('id', it);
 
-      if (it !== this.currentWidget) {
-        li.classList.add(Navigation.activeClassName);
-      }
-
       ul.appendChild(li);
     });
 
     document.body.appendChild(nav);
-
-    this.addClickListener();
-    this.widgetList = document.querySelectorAll('li');
   }
 
   private addClickListener(): void {
@@ -75,9 +77,9 @@ export default class Navigation implements INavigation {
     });
   }
 
-  private addWidgetActiveClass(widgetId: string): void {
+  private addWidgetActiveClass(widget: string): void {
     this.widgetList!.forEach((it) => {
-      if (it.getAttribute('id') === widgetId) {
+      if (it.getAttribute('id') === widget) {
         it.classList.add(Navigation.activeClassName);
       }
     });
