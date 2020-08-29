@@ -31,6 +31,10 @@ export default class Circle {
 
   private static readonly rIncrease = 1;
 
+  private static readonly dMin = 1;
+
+  private static readonly dMax = 3;
+
   constructor(context: TContext) {
     this.ctx = context;
     this.x = this.getStartCoordinates().x;
@@ -92,12 +96,10 @@ export default class Circle {
   }
 
   private static getDynamic(): TDynamic {
-    const MIN = 0.5;
-    const MAX = 3;
     const MULTIPLIER = Math.random() > 0.5 ? -1 : 1;
-    const rand = Math.random() * (MAX - MIN);
+    const dRandom = Math.round(Math.random() * (this.dMax - this.dMin)) + 1;
 
-    return Math.round(rand) * MULTIPLIER;
+    return dRandom * MULTIPLIER;
   }
 
   private getStartCoordinates(): { x: TCoordinate; y: TCoordinate } {
@@ -116,10 +118,10 @@ export default class Circle {
   private static getValidStartPoint(startPoint: TCoordinate, limit: TCoordinate): TCoordinate {
     let point: TCoordinate;
 
-    if (startPoint < Circle.rMin) {
-      point = Circle.rMin;
-    } else if (startPoint > limit - Circle.rMin) {
-      point = limit - Circle.rMin;
+    if (startPoint < this.rMin) {
+      point = this.rMin;
+    } else if (startPoint > limit - this.rMin) {
+      point = limit - this.rMin;
     } else {
       point = startPoint;
     }
