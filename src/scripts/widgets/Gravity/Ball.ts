@@ -8,6 +8,7 @@ type TRadius = number;
 type TUpdate = {
   x: TCoordinate;
   y: TCoordinate;
+  isDragged: boolean;
 };
 
 export default class Ball implements IShape<TUpdate> {
@@ -27,14 +28,29 @@ export default class Ball implements IShape<TUpdate> {
     this.y = this.getStartCoordinates().y;
   }
 
-  public update({ x, y }: TUpdate): void {
-    this.updateCoordinates(x, y);
+  public update({ x, y, isDragged }: TUpdate): void {
+    this.updateCoordinates(x, y, isDragged);
     this.draw();
   }
 
-  private updateCoordinates(x: TCoordinate, y: TCoordinate): void {
-    this.x = x;
-    this.y = y;
+  private updateCoordinates(x: TCoordinate, y: TCoordinate, isDragged: boolean): void {
+    if (!isDragged) return;
+
+    if (x + this.r > this.ctx.canvas.width) {
+      this.x = this.ctx.canvas.width - this.r;
+    } else if (x - this.r < 0) {
+      this.x = this.r;
+    } else {
+      this.x = x;
+    }
+
+    if (y + this.r > this.ctx.canvas.height) {
+      this.y = this.ctx.canvas.height - this.r;
+    } else if (y - this.r < 0) {
+      this.y = this.r;
+    } else {
+      this.y = y;
+    }
   }
 
   private draw(): void {
@@ -74,5 +90,16 @@ export default class Ball implements IShape<TUpdate> {
     }
 
     return point;
+  }
+
+  get coordinates(): { x: TCoordinate, y: TCoordinate } {
+    return {
+      x: this.x,
+      y: this.y,
+    };
+  }
+
+  get radius(): TRadius {
+    return this.r;
   }
 }

@@ -35,7 +35,7 @@ export default class App implements IApp {
   }
 
   private runFirstWidget(): void {
-    this.widgets[Object.keys(this.widgets)[0]].start();
+    this.widgets[Object.keys(this.widgets)[1]].start(); // TODO: change to 0 array item
   }
 
   private navigationHandler(widgetKey: string): void {
