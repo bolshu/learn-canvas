@@ -1,4 +1,5 @@
 import { TCoordinate } from './types';
+import { IShape } from '../interfaces';
 
 type TContext = CanvasRenderingContext2D;
 
@@ -8,7 +9,12 @@ type TRadius = number;
 
 type TColor = string;
 
-export default class Circle {
+type TUpdate = {
+  x?: TCoordinate;
+  y?: TCoordinate;
+};
+
+export default class Circle implements IShape<TUpdate> {
   private ctx: TContext;
 
   private x: TCoordinate;
@@ -44,8 +50,8 @@ export default class Circle {
     this.r = Circle.rMin;
   }
 
-  public update(mouseX?: TCoordinate, mouseY?: TCoordinate): void {
-    this.updateRadius(mouseX, mouseY);
+  public update({ x, y }: TUpdate): void {
+    this.updateRadius(x, y);
 
     if (this.isOutOfArea(this.x, this.ctx.canvas.width)) {
       this.dx = -this.dx;
@@ -61,14 +67,14 @@ export default class Circle {
     this.draw();
   }
 
-  private updateRadius(mouseX?: TCoordinate, mouseY?: TCoordinate): void {
+  private updateRadius(x?: TCoordinate, y?: TCoordinate): void {
     if (
-      mouseX
-      && mouseY
-      && mouseX - this.x < Circle.area
-      && mouseX - this.x > -Circle.area
-      && mouseY - this.y < Circle.area
-      && mouseY - this.y > -Circle.area
+      x
+      && y
+      && x - this.x < Circle.area
+      && x - this.x > -Circle.area
+      && y - this.y < Circle.area
+      && y - this.y > -Circle.area
       && this.r < Circle.rMax
     ) {
       this.r += Circle.rIncrease;

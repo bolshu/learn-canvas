@@ -9,9 +9,9 @@ export default class Circles implements IWidget {
 
   private animationId?: number;
 
-  private mouseX?: TCoordinate;
+  private x?: TCoordinate;
 
-  private mouseY?: TCoordinate;
+  private y?: TCoordinate;
 
   private static readonly circlesCount = 500;
 
@@ -40,16 +40,16 @@ export default class Circles implements IWidget {
   }
 
   private mouseHandlerCb(e: MouseEvent) {
-    this.mouseX = e.x;
-    this.mouseY = e.y;
+    this.x = e.x;
+    this.y = e.y;
 
     this.resetMouseCoordinates();
   }
 
   private resetMouseCoordinates(): void {
     const timer = window.setTimeout(() => {
-      this.mouseX = undefined;
-      this.mouseY = undefined;
+      this.x = undefined;
+      this.y = undefined;
 
       window.clearTimeout(timer);
     }, Circles.clearMouseCoordinatesTimeout);
@@ -69,7 +69,10 @@ export default class Circles implements IWidget {
     Canvas.getInstance().clear();
 
     this.circles.forEach((it) => {
-      it.update(this.mouseX, this.mouseY);
+      it.update({
+        x: this.x,
+        y: this.y,
+      });
     });
   }
 

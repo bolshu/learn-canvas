@@ -4,6 +4,7 @@ import { IWidget } from './widgets/interfaces';
 
 // widgets
 import Circles from './widgets/Circles/Circles';
+import Gravity from './widgets/Gravity/Gravity';
 
 interface IApp {
   run(): void;
@@ -17,10 +18,7 @@ export default class App implements IApp {
   constructor() {
     this.widgets = {
       circles: new Circles(),
-      circles1: new Circles(),
-      circles2: new Circles(),
-      circles3: new Circles(),
-      circles4: new Circles(),
+      gravity: new Gravity(),
     };
 
     this.navigationHandler = this.navigationHandler.bind(this);
