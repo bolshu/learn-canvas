@@ -11,18 +11,18 @@ export default class Ball implements IShape {
 
   private readonly color: string = 'tomato';
 
-  private readonly gravity = 1;
+  private readonly gravity = 2;
 
-  private readonly friction = Math.random();
+  private readonly friction = 0.9;
 
-  private readonly r: TRadius = (1 - this.friction) * 20;
+  private readonly r: TRadius = Math.random() * 30;
 
-  private y: TCoordinate = this.getStartCoordinate(this.canvas.element.height);
+  private y: TCoordinate = this.getStartCoordinate(this.canvas.element.height / 2);
 
   private d = 5;
 
   public update(): void {
-    if (this.y + this.r > this.canvas.element.height) {
+    if (this.y + this.r + this.d > this.canvas.element.height) {
       this.d = -this.d * this.friction;
     } else {
       this.d += this.gravity;
@@ -43,6 +43,7 @@ export default class Ball implements IShape {
     this.canvas.context.beginPath();
     this.canvas.context.arc(this.x, this.y, this.r, ANGLE.START, ANGLE.END, false);
     this.canvas.context.fill();
+    this.canvas.context.stroke();
   }
 
   private getStartCoordinate(limit: TCoordinate): TCoordinate {
