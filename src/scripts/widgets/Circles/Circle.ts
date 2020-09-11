@@ -1,7 +1,6 @@
 import { TCoordinate } from './types';
 import { IShape } from '../interfaces';
-
-type TContext = CanvasRenderingContext2D;
+import Canvas from '../../Canvas';
 
 type TDynamic = number;
 
@@ -15,8 +14,6 @@ type TUpdate = {
 };
 
 export default class Circle implements IShape<TUpdate> {
-  private ctx: TContext;
-
   private x: TCoordinate;
 
   private y: TCoordinate;
@@ -26,6 +23,8 @@ export default class Circle implements IShape<TUpdate> {
   private dy: TDynamic;
 
   private r: TRadius;
+
+  private readonly canvas = Canvas.getInstance();
 
   private readonly color = Circle.getColor();
 
@@ -41,8 +40,7 @@ export default class Circle implements IShape<TUpdate> {
 
   private readonly dMax = 3;
 
-  constructor(context: TContext) {
-    this.ctx = context;
+  constructor() {
     this.x = this.getStartCoordinates().x;
     this.y = this.getStartCoordinates().y;
     this.dx = this.getDynamic();
@@ -53,11 +51,11 @@ export default class Circle implements IShape<TUpdate> {
   public update({ x, y }: TUpdate): void {
     this.updateRadius(x, y);
 
-    if (this.isOutOfArea(this.x, this.ctx.canvas.width)) {
+    if (this.isOutOfArea(this.x, this.canvas.element.width)) {
       this.dx = -this.dx;
     }
 
-    if (this.isOutOfArea(this.y, this.ctx.canvas.height)) {
+    if (this.isOutOfArea(this.y, this.canvas.element.height)) {
       this.dy = -this.dy;
     }
 
@@ -89,10 +87,10 @@ export default class Circle implements IShape<TUpdate> {
       END: Math.PI * 2,
     };
 
-    this.ctx.fillStyle = this.color;
-    this.ctx.beginPath();
-    this.ctx.arc(this.x, this.y, this.r, ANGLE.START, ANGLE.END, false);
-    this.ctx.fill();
+    this.canvas.context.fillStyle = this.color;
+    this.canvas.context.beginPath();
+    this.canvas.context.arc(this.x, this.y, this.r, ANGLE.START, ANGLE.END, false);
+    this.canvas.context.fill();
   }
 
   private static getColor(): TColor {
@@ -109,8 +107,7 @@ export default class Circle implements IShape<TUpdate> {
   }
 
   private getStartCoordinates(): { x: TCoordinate; y: TCoordinate } {
-    const { canvas } = this.ctx;
-    const { width, height } = canvas;
+    const { element: { width, height } } = this.canvas;
 
     const x = this.getValidStartPoint(width);
     const y = this.getValidStartPoint(height);

@@ -80,7 +80,7 @@ export default class Circles implements IWidget {
 
   private addCircles() {
     for (let i = 0; i < this.circlesCount; i += 1) {
-      this.circles.push(new Circle(this.canvas.context));
+      this.circles.push(new Circle());
     }
   }
 }
