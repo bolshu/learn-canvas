@@ -1,25 +1,27 @@
+import throttle from './throttle';
+
 type TContext = CanvasRenderingContext2D;
 
 type TCanvas = HTMLCanvasElement;
 
 interface ICanvas {
-  getCanvas(): TCanvas;
   clear(): void;
 }
 
 export default class Canvas implements ICanvas {
   private ctx: TContext;
 
-  private canvas: TCanvas;
+  private el: TCanvas;
 
   private static instance: Canvas;
 
   constructor() {
     Canvas.create();
 
-    this.canvas = <TCanvas>document.querySelector('#canvas')!;
-    this.ctx = this.canvas.getContext('2d')!;
+    this.el = <TCanvas>document.querySelector('#canvas')!;
+    this.ctx = this.el.getContext('2d')!;
 
+    this.handleResize = throttle(this.handleResize.bind(this), 100);
     this.addResizeListener();
   }
 
@@ -42,25 +44,27 @@ export default class Canvas implements ICanvas {
     document.body.appendChild(element);
   }
 
-  public clear() {
-    const { width, height } = this.canvas;
+  public clear(): void {
+    const { width, height } = this.el;
     this.ctx.clearRect(0, 0, width, height);
   }
 
-  public getCanvas() {
-    return this.canvas;
+  private handleResize(): void {
+    const { innerWidth, innerHeight } = window;
+
+    this.el.width = innerWidth;
+    this.el.height = innerHeight;
   }
 
   private addResizeListener(): void {
-    window.addEventListener('resize', () => {
-      const { innerWidth, innerHeight } = window;
-
-      this.canvas.width = innerWidth;
-      this.canvas.height = innerHeight;
-    });
+    window.addEventListener('resize', this.handleResize);
   }
 
   get context(): TContext {
     return this.ctx;
+  }
+
+  get element(): TCanvas {
+    return this.el;
   }
 }

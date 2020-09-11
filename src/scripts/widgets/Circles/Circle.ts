@@ -29,25 +29,25 @@ export default class Circle implements IShape<TUpdate> {
 
   private readonly color = Circle.getColor();
 
-  private static readonly area = 100;
+  private readonly area = 100;
 
-  private static readonly rMin = 20;
+  private readonly rMin = 20;
 
-  private static readonly rMax = 100;
+  private readonly rMax = 100;
 
-  private static readonly rIncrease = 1;
+  private readonly rIncrease = 1;
 
-  private static readonly dMin = 1;
+  private readonly dMin = 1;
 
-  private static readonly dMax = 3;
+  private readonly dMax = 3;
 
   constructor(context: TContext) {
     this.ctx = context;
     this.x = this.getStartCoordinates().x;
     this.y = this.getStartCoordinates().y;
-    this.dx = Circle.getDynamic();
-    this.dy = Circle.getDynamic();
-    this.r = Circle.rMin;
+    this.dx = this.getDynamic();
+    this.dy = this.getDynamic();
+    this.r = this.rMin;
   }
 
   public update({ x, y }: TUpdate): void {
@@ -71,15 +71,15 @@ export default class Circle implements IShape<TUpdate> {
     if (
       x
       && y
-      && x - this.x < Circle.area
-      && x - this.x > -Circle.area
-      && y - this.y < Circle.area
-      && y - this.y > -Circle.area
-      && this.r < Circle.rMax
+      && x - this.x < this.area
+      && x - this.x > -this.area
+      && y - this.y < this.area
+      && y - this.y > -this.area
+      && this.r < this.rMax
     ) {
-      this.r += Circle.rIncrease;
-    } else if (this.r > Circle.rMin) {
-      this.r -= Circle.rIncrease;
+      this.r += this.rIncrease;
+    } else if (this.r > this.rMin) {
+      this.r -= this.rIncrease;
     }
   }
 
@@ -101,7 +101,7 @@ export default class Circle implements IShape<TUpdate> {
     return palette[Math.floor(Math.random() * palette.length)];
   }
 
-  private static getDynamic(): TDynamic {
+  private getDynamic(): TDynamic {
     const MULTIPLIER = Math.random() > 0.5 ? -1 : 1;
     const dRandom = Math.round(Math.random() * (this.dMax - this.dMin)) + 1;
 
@@ -112,16 +112,15 @@ export default class Circle implements IShape<TUpdate> {
     const { canvas } = this.ctx;
     const { width, height } = canvas;
 
-    const startX = Math.random() * width;
-    const x = Circle.getValidStartPoint(startX, width);
-
-    const startY = Math.random() * height;
-    const y = Circle.getValidStartPoint(startY, height);
+    const x = this.getValidStartPoint(width);
+    const y = this.getValidStartPoint(height);
 
     return { x, y };
   }
 
-  private static getValidStartPoint(startPoint: TCoordinate, limit: TCoordinate): TCoordinate {
+  private getValidStartPoint(limit: TCoordinate): TCoordinate {
+    const startPoint = Math.random() * limit;
+
     let point: TCoordinate;
 
     if (startPoint < this.rMin) {

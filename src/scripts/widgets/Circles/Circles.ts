@@ -13,9 +13,11 @@ export default class Circles implements IWidget {
 
   private y?: TCoordinate;
 
-  private static readonly circlesCount = 500;
+  private readonly canvas = Canvas.getInstance();
 
-  private static readonly clearMouseCoordinatesTimeout = 3000;
+  private readonly circlesCount = 500;
+
+  private readonly clearMouseCoordinatesTimeout = 3000;
 
   constructor() {
     this.circles = [];
@@ -23,7 +25,7 @@ export default class Circles implements IWidget {
     this.updateCircles = this.updateCircles.bind(this);
     this.resetMouseCoordinates = throttle(
       this.resetMouseCoordinates.bind(this),
-      Circles.clearMouseCoordinatesTimeout,
+      this.clearMouseCoordinatesTimeout,
     );
     this.mouseHandlerCb = throttle(this.mouseHandlerCb.bind(this), 50);
     this.addCircles();
@@ -52,21 +54,21 @@ export default class Circles implements IWidget {
       this.y = undefined;
 
       window.clearTimeout(timer);
-    }, Circles.clearMouseCoordinatesTimeout);
+    }, this.clearMouseCoordinatesTimeout);
   }
 
   private addMouseListener(): void {
-    Canvas.getInstance().getCanvas().addEventListener('mousemove', this.mouseHandlerCb);
+    this.canvas.element.addEventListener('mousemove', this.mouseHandlerCb);
   }
 
   private removeMouseListener(): void {
-    Canvas.getInstance().getCanvas().removeEventListener('mousemove', this.mouseHandlerCb);
+    this.canvas.element.removeEventListener('mousemove', this.mouseHandlerCb);
   }
 
   private updateCircles(): void {
     this.animationId = window.requestAnimationFrame(this.updateCircles);
 
-    Canvas.getInstance().clear();
+    this.canvas.clear();
 
     this.circles.forEach((it) => {
       it.update({
@@ -77,8 +79,8 @@ export default class Circles implements IWidget {
   }
 
   private addCircles() {
-    for (let i = 0; i < Circles.circlesCount; i += 1) {
-      this.circles.push(new Circle(Canvas.getInstance().context));
+    for (let i = 0; i < this.circlesCount; i += 1) {
+      this.circles.push(new Circle(this.canvas.context));
     }
   }
 }
