@@ -14,16 +14,6 @@ type TUpdate = {
 };
 
 export default class Circle implements IShape<TUpdate> {
-  private x: TCoordinate;
-
-  private y: TCoordinate;
-
-  private dx: TDynamic;
-
-  private dy: TDynamic;
-
-  private r: TRadius;
-
   private readonly canvas = Canvas.getInstance();
 
   private readonly color = Circle.getColor();
@@ -40,22 +30,24 @@ export default class Circle implements IShape<TUpdate> {
 
   private readonly dMax = 3;
 
-  constructor() {
-    this.x = this.getStartCoordinates().x;
-    this.y = this.getStartCoordinates().y;
-    this.dx = this.getDynamic();
-    this.dy = this.getDynamic();
-    this.r = this.rMin;
-  }
+  private x: TCoordinate = this.getStartCoordinates().x;
+
+  private y: TCoordinate = this.getStartCoordinates().y;
+
+  private dx: TDynamic = this.getDynamic();
+
+  private dy: TDynamic = this.getDynamic();
+
+  private r: TRadius = this.rMin;
 
   public update({ x, y }: TUpdate): void {
     this.updateRadius(x, y);
 
-    if (this.isOutOfArea(this.x, this.canvas.element.width)) {
+    if (this.isOutOfCanvas(this.x, this.canvas.element.width)) {
       this.dx = -this.dx;
     }
 
-    if (this.isOutOfArea(this.y, this.canvas.element.height)) {
+    if (this.isOutOfCanvas(this.y, this.canvas.element.height)) {
       this.dy = -this.dy;
     }
 
@@ -131,7 +123,7 @@ export default class Circle implements IShape<TUpdate> {
     return point;
   }
 
-  private isOutOfArea(position: TCoordinate, limit: TCoordinate): boolean {
+  private isOutOfCanvas(position: TCoordinate, limit: TCoordinate): boolean {
     return (position + this.r > limit) || (position - this.r < 0);
   }
 }

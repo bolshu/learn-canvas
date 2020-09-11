@@ -11,14 +11,16 @@ interface IApp {
 }
 
 export default class App implements IApp {
+  private readonly canvas = Canvas.getInstance();
+
   private widgets: Record<string, IWidget>;
 
   private navigation: Navigation;
 
   constructor() {
     this.widgets = {
-      circles: new Circles(),
       gravity: new Gravity(),
+      circles: new Circles(),
     };
 
     this.navigationHandler = this.navigationHandler.bind(this);
@@ -43,7 +45,7 @@ export default class App implements IApp {
       it.stop();
     });
 
-    Canvas.getInstance().clear();
+    this.canvas.clear();
 
     this.widgets[widgetKey].start();
   }

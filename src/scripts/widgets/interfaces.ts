@@ -3,6 +3,6 @@ export interface IWidget {
   stop(): void;
 }
 
-export interface IShape<T> {
+export interface IShape<T = {}> {
   update(args: T): void;
 }
